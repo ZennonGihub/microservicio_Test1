@@ -1,20 +1,21 @@
 package org.main.microservicio.persistence.Entitys;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
 
 @Entity
 public class AdultEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true, length = 60)
     private String name;
     @Column(nullable = false, unique = true, length = 60)
     private String lastName;
     @Column(nullable = false, unique = true, length = 60)
-    private int birthYear;
+    private LocalDate birthYear;
     private String imageUrl;
 
     public Long getId() {
@@ -41,11 +42,11 @@ public class AdultEntity {
         this.lastName = lastName;
     }
 
-    public int getBirthYear() {
+    public LocalDate getBirthYear() {
         return birthYear;
     }
 
-    public void setBirthYear(int birthYear) {
+    public void setBirthYear(LocalDate birthYear) {
         this.birthYear = birthYear;
     }
 
