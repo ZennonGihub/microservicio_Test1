@@ -1,9 +1,11 @@
 services:
-  app:
-    build: microservicioAdult
+
+
+  adultservice:                          #Nombre
+    build: microservicioAdult            #Donde docker buscara el dockerFile
     ports:
-      - ${SPRING_PORT}:${SPRING_PORT}
-    container_name: microservice-main
+      - ${SPRING_PORT_ADULT}:${SPRING_PORT_ADULT}
+    container_name: microserviceAdult    #Nombre del contenedor
     networks:
       - microservice-network
     depends_on:
@@ -11,9 +13,24 @@ services:
          condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRING_DATASOUCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
-      SPRING_DATASOUCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
 
+  childservice:
+    build: microservicioChild
+    ports:
+      - ${SPRING_PORT_CHILD}:8080
+    container_name: microservicechild
+    networks:
+      - microservice-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_PORT: ${SPRING_PORT_CHILD}
 
   postgres:
     image: 'postgres:alpine'
@@ -26,12 +43,13 @@ services:
     networks:
       - microservice-network
     healthcheck:
-      test: ['CMD', 'pg_isready -U zennon']
+      test: ['CMD', 'pg_isready', '-U', '${POSTGRES_USER}', '-d', '${POSTGRES_DB}']
       interval: 5s
       timeout: 20s
       retries: 3
     volumes:
-      - pgdata:/data/postgres
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 networks:
   microservice-network:
     driver: bridge

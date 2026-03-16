@@ -1,0 +1,3 @@
+CREATE DATABASE db_adult;
+
+CREATE DATABASE db_child;
